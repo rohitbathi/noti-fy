@@ -21,7 +21,7 @@ COPY tsconfig.json ./
 RUN npm i
 
 COPY . .
-COPY .env ./.env
+# COPY .env ./.env
 
 RUN npm run gcp-build
 
