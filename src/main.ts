@@ -164,7 +164,7 @@ const driverProgram = async () => {
       await notifyUser(true);
     } else {
       console.log('No changes detected.');
-      // await notifyUser(false);
+      await notifyUser(false);
     }
   } else {
     saveJobs(jobs);
