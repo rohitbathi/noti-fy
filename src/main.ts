@@ -1,4 +1,5 @@
 import puppeteer from 'puppeteer';
+
 import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
@@ -32,7 +33,10 @@ const hashJson = (jsonString: string) => {
 };
 
 const getJobs = async () => {
-  const browser = await puppeteer.launch({ headless: true });
+  const browser = await puppeteer.launch({ 
+    headless: true,
+    args: ['--no-sandbox', '--disable-setuid-sandbox'],
+  });
   const page = await browser.newPage();
 
   await page.goto(JOB_LINK);
@@ -179,6 +183,7 @@ const driverProgram = async () => {
 // Uncomment the following lines to run the function as a Google Cloud Function
 export const root: HttpFunction = async (req, res) => {
   try {
+    await console.log(puppeteer.executablePath())
     await driverProgram();
     res.status(200).send('Success');
   } catch (error) {

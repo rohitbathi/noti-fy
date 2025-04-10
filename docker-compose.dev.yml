@@ -1,0 +1,12 @@
+version: "3.7"
+services:
+ api:
+  build:
+   context: .
+   target: build
+  volumes:
+   - ./:/usr/src/notify-scrape
+   - /usr/src/notify-scrape/node_modules
+  ports:
+   - 4000:8080
+  command: npm run gcp-start

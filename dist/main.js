@@ -15,7 +15,10 @@ const hashJson = (jsonString) => {
         .digest('hex');
 };
 const getJobs = async () => {
-    const browser = await puppeteer.launch({ headless: true });
+    const browser = await puppeteer.launch({
+        headless: true,
+        args: ['--no-sandbox', '--disable-setuid-sandbox']
+    });
     const page = await browser.newPage();
     await page.goto(JOB_LINK);
     await page.setViewport({ width: 1080, height: 1024 });
@@ -115,7 +118,7 @@ const driverProgram = async () => {
         }
         else {
             console.log('No changes detected.');
-            // await notifyUser(false);
+            await notifyUser(false);
         }
     }
     else {
@@ -129,6 +132,7 @@ const driverProgram = async () => {
 // Uncomment the following lines to run the function as a Google Cloud Function
 export const root = async (req, res) => {
     try {
+        console.log(puppeteer.executablePath());
         await driverProgram();
         res.status(200).send('Success');
     }
