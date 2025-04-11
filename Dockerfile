@@ -31,13 +31,25 @@ FROM ghcr.io/puppeteer/puppeteer:24.4.0 AS production
 ENV PUPPETEER_SKIP_DOWNLOAD=true \
     PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable
 
+USER root
+
+RUN apt-get update && apt-get install gnupg wget -y && \
+    wget --quiet --output-document=- https://dl-ssl.google.com/linux/linux_signing_key.pub | gpg --dearmor > /etc/apt/trusted.gpg.d/google-archive.gpg && \
+    sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list' && \
+    apt-get update && \
+    apt-get install google-chrome-stable -y --no-install-recommends && \
+    rm -rf /var/lib/apt/lists/*    
+
 WORKDIR /usr/src/notify-scrape
 
 COPY package*.json .
+COPY tsconfig.json ./
 
-RUN npm ci --only=production
+# COPY .env ./.env
+
+RUN npm install --omit=dev
 
 # Copy compiled build from the build stage
 COPY --from=build /usr/src/notify-scrape/dist ./dist
 
-CMD ["node", "dist/main.js"]
+CMD ["npm", "run", "gcp-start"]
